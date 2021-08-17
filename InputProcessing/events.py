@@ -17,7 +17,7 @@ class Events:
         self._right_toe_x = right_toe_x
 
         self._sacro_x = None
-        self.frames = {}
+        self.events = None
         self._drop_turns = drop_turns
 
     def get_events(self):
@@ -29,15 +29,14 @@ class Events:
         self._sacro_x = savitzky_golay(self._pelvis_x, C.WINDOW_SIZE, C.ORDER)
 
         turns = self._get_and_filter_turns(threshold=C.TURNS_THRESHOLD)
-
         self._process_turns(turns)
 
         # Get Heel Strike Events
         X_HS_l = self._left_foot_x - self._sacro_x
         X_HS_r = self._right_foot_x - self._sacro_x
 
-        frames_HS_l = self._get_events_frames(X_HS_l,turns, "HS",C.PEAK_SENSIBILITY,self._drop_turns)
-        frames_HS_r = self._get_events_frames(X_HS_r,turns, "HS",C.PEAK_SENSIBILITY,self._drop_turns)
+        frames_HS_l = self._get_events_frames(X_HS_l, turns, "HS", C.PEAK_SENSIBILITY, self._drop_turns)
+        frames_HS_r = self._get_events_frames(X_HS_r, turns, "HS", C.PEAK_SENSIBILITY, self._drop_turns)
 
         # Get Toe Off Events
         X_TO_l = self._left_toe_x - self._sacro_x
@@ -46,25 +45,43 @@ class Events:
         frames_TO_l = self._get_events_frames(X_TO_l, turns, "TO", C.PEAK_SENSIBILITY,self._drop_turns)
         frames_TO_r = self._get_events_frames(X_TO_r, turns, "TO", C.PEAK_SENSIBILITY, self._drop_turns)
 
-        events = {}
+        events = []
         for frame in frames_HS_l:
-            events[frame] = "EVENT_LEFT_FOOT_INITIAL_CONTACT"
+            event = {}
+            event["event"] = "EVENT_LEFT_FOOT_INITIAL_CONTACT"
+            event["frame"] = frame
+            event["time"] = frame/100
+            events.append(event)
+            #events[frame] = "EVENT_LEFT_FOOT_INITIAL_CONTACT"
 
         for frame in frames_HS_r:
-            events[frame] = "EVENT_RIGHT_FOOT_INITIAL_CONTACT"
+            #events[frame] = "EVENT_RIGHT_FOOT_INITIAL_CONTACT"
+            event = {}
+            event["event"] = "EVENT_RIGHT_FOOT_INITIAL_CONTACT"
+            event["frame"] = frame
+            event["time"] = frame / 100
+            events.append(event)
 
         for frame in frames_TO_r:
-            events[frame] = "EVENT_RIGHT_FOOT_TOE_OFF"
+            #events[frame] = "EVENT_RIGHT_FOOT_TOE_OFF"
+            event = {}
+            event["event"] = "EVENT_RIGHT_FOOT_TOE_OFF"
+            event["frame"] = frame
+            event["time"] = frame / 100
+            events.append(event)
 
         for frame in frames_TO_l:
-            events[frame] = "EVENT_LEFT_FOOT_TOE_OFF"
+            #events[frame] = "EVENT_LEFT_FOOT_TOE_OFF"
+            event = {}
+            event["event"] = "EVENT_LEFT_FOOT_TOE_OFF"
+            event["frame"] = frame
+            event["time"] = frame / 100
+            events.append(event)
 
         # sort and save
+        events_sort = sorted(events, key=lambda k: k['frame'])
 
-        frames = list(events.keys())
-        frames.sort()
-
-        self.frames = pd.DataFrame(frames)
+        self.events = pd.DataFrame(events_sort)
 
     def _get_events_frames(self,data,turns, event="HS", s=20, drop_turns=False):
         """
@@ -78,7 +95,7 @@ class Events:
         """
         frames = []
 
-        max = True if event=="HS" else False
+        max = True if event == "HS" else False
         peaks = peak_detection(data,s,max)
 
         for peak in peaks:
@@ -86,10 +103,10 @@ class Events:
             if drop_turns:
                 for cd in turns:
                     not_valid = not_valid | ((cd - 50) < peak and (cd + 50) > peak)
-                for actualPeaks in frames:
-                    not_valid = not_valid | ((peak - actualPeaks) < 50)
-                if not not_valid:
-                    frames.append(peak)
+            for actualPeaks in frames:
+                not_valid = not_valid | ((peak - actualPeaks) < 50)
+            if not not_valid:
+                frames.append(peak)
 
         return frames
 
