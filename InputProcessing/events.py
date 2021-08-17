@@ -5,7 +5,7 @@ import InputProcessing.constants as C
 
 class Events:
 
-    def __init__(self, data):
+    def __init__(self, data, drop_turns=False):
 
         pelvis_x, left_foot_x, right_foot_x, \
             left_toe_x, right_toe_x = self._getDataFromRawDataframe(data)
@@ -18,6 +18,7 @@ class Events:
 
         self._sacro_x = None
         self.frames = {}
+        self._drop_turns = drop_turns
 
     def get_events(self):
         """
@@ -35,15 +36,15 @@ class Events:
         X_HS_l = self._left_foot_x - self._sacro_x
         X_HS_r = self._right_foot_x - self._sacro_x
 
-        frames_HS_l = self._get_events_frames(X_HS_l,turns, "HS",C.PEAK_SENSIBILITY,False)
-        frames_HS_r = self._get_events_frames(X_HS_r,turns, "HS",C.PEAK_SENSIBILITY,False)
+        frames_HS_l = self._get_events_frames(X_HS_l,turns, "HS",C.PEAK_SENSIBILITY,self._drop_turns)
+        frames_HS_r = self._get_events_frames(X_HS_r,turns, "HS",C.PEAK_SENSIBILITY,self._drop_turns)
 
         # Get Toe Off Events
         X_TO_l = self._left_toe_x - self._sacro_x
         X_TO_r = self._right_toe_x - self._sacro_x
 
-        frames_TO_l = self._get_events_frames(X_TO_l, turns, "TO", C.PEAK_SENSIBILITY,False)
-        frames_TO_r = self._get_events_frames(X_TO_r, turns, "TO", C.PEAK_SENSIBILITY, False)
+        frames_TO_l = self._get_events_frames(X_TO_l, turns, "TO", C.PEAK_SENSIBILITY,self._drop_turns)
+        frames_TO_r = self._get_events_frames(X_TO_r, turns, "TO", C.PEAK_SENSIBILITY, self._drop_turns)
 
         events = {}
         for frame in frames_HS_l:
@@ -63,7 +64,7 @@ class Events:
         frames = list(events.keys())
         frames.sort()
 
-        self.frames = frames
+        self.frames = pd.DataFrame(frames)
 
     def _get_events_frames(self,data,turns, event="HS", s=20, drop_turns=False):
         """

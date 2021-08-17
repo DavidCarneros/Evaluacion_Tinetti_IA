@@ -3,7 +3,6 @@ ORDER = 3
 
 TURNS_THRESHOLD = 0.9
 PEAK_SENSIBILITY = 20
-DROP_TURNS = False
 
 class Colorama:
     HEADER = '\033[95m'
