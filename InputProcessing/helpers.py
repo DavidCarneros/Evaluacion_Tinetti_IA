@@ -1,6 +1,6 @@
 import numpy as np
 from math import factorial
-from constants import Colorama as Color
+from InputProcessing.constants import Colorama as Color
 
 def peak_detection(data, s=20, max=True):
     """

@@ -127,7 +127,6 @@ class GaitParameters:
                     is_turn = is_turn | ((turn >= (IC_init - turn_offset)) and (turn <= (IC_end + turn_offset)))
 
                 is_valid = self._check_valid_stride(leg, IC_init, IC_end)
-
                 strides_auxiliar.append({
                     "IC_init": IC_init,
                     "IC_end": IC_end,
@@ -251,7 +250,7 @@ class GaitParameters:
                     kine_text = f"{leg} {kine}"
                     kine_data = self._data_angles[kine_text]
 
-                    save_values_aux, save_values_count = self._scale_kinematic_stride(kine_text, IC_init, IC_end)
+                    save_values_aux, save_values_count = self._scale_kinematic_stride(self._data_angles, kine_text, IC_init, IC_end)
                     try:
                         stride_normalized = [save_values_aux[k] / save_values_count[k] for k in
                                              range(0, len(save_values_aux))]
@@ -261,7 +260,7 @@ class GaitParameters:
 
                 kine_text = "CoM y"
                 kine_data = self._center_of_mass[kine_text]
-                save_values_aux, save_values_count = self._scale_kinematic_stride(kine_text, IC_init, IC_end)
+                save_values_aux, save_values_count = self._scale_kinematic_stride(kine_data, kine_text, IC_init, IC_end)
                 try:
                     stride_normalized = [save_values_aux[k] / save_values_count[k] for k in
                                          range(0, len(save_values_aux))]
@@ -273,7 +272,7 @@ class GaitParameters:
 
         return strides
 
-    def _scale_kinematic_stride(self, kine_text, IC_init, IC_end):
+    def _scale_kinematic_stride(self, kine_data, kine_text, IC_init, IC_end):
         """
 
         :param kine_text:
@@ -281,7 +280,7 @@ class GaitParameters:
         :param IC_end:
         :return:
         """
-        stride_data = self._data_angles.iloc[IC_init:IC_end].reset_index()
+        stride_data = kine_data.iloc[IC_init:IC_end].reset_index()
         min_frame = min(stride_data["index"])
         max_frame = max(stride_data["index"])
         stride_data["n_index"] = stride_data["index"] - min_frame
@@ -388,9 +387,13 @@ class GaitParameters:
         :param events_between:
         :return:
         """
-        isLeftTO_OK = len(events_between[events_between["event"] == "EVENT_LEFT_FOOT_TOE_OFF"]) == 1
-        isRightHS_OK = len(events_between[events_between["event"] == "EVENT_RIGHT_FOOT_INITIAL_CONTACT"]) == 1
-        isRightTO_OK = len(events_between[events_between["event"] == "EVENT_RIGHT_FOOT_TOE_OFF"]) == 1
+        is_left_to_ok = len(events_between[events_between["event"] == "EVENT_LEFT_FOOT_TOE_OFF"]) == 1
+        is_right_hs_ok = len(events_between[events_between["event"] == "EVENT_RIGHT_FOOT_INITIAL_CONTACT"]) == 1
+        is_right_to_ok = len(events_between[events_between["event"] == "EVENT_RIGHT_FOOT_TOE_OFF"]) == 1
+
+        return is_right_hs_ok and is_left_to_ok and is_right_to_ok
+
+
 
     def _get_and_filter_turns(self, threshold=0.9):
         """
