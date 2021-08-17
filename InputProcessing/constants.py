@@ -4,6 +4,18 @@ ORDER = 3
 TURNS_THRESHOLD = 0.9
 PEAK_SENSIBILITY = 20
 
+KINEMATICS_PARAMETERS = [
+    "Knee Abduction/Adduction",
+    "Knee Internal/External Rotation",
+    "Knee Flexion/Extension",
+    "Ankle Abduction/Adduction",
+    "Ankle Internal/External Rotation",
+    "Ankle Dorsiflexion/Plantarflexion",
+    "Hip Abduction/Adduction",
+    "Hip Internal/External Rotation",
+    "Hip Flexion/Extension"
+]
+
 class Colorama:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
