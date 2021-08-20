@@ -23,10 +23,10 @@ def run(filename, name="No name"):
     gait_evaluator = evaluator.GaitEvaluator(gait_parser.gait)
     gait_evaluator.predict_all()
 
-    report_generator = report.Report("David","Carneros Prado",23,gait_parser.gait)
+    report_generator = report.Report("David","Carneros Prado",23,gait_parser.gait,gait_evaluator.evaluation)
     report_generator.generate_report()
 
-    #print(gait_evaluator.evaluation)
+    print(gait_evaluator.evaluation)
 
 
 if __name__ == "__main__":
