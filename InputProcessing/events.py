@@ -78,8 +78,32 @@ class Events:
             event["time"] = frame / 100
             events.append(event)
 
+
         # sort and save
         events_sort = sorted(events, key=lambda k: k['frame'])
+
+        ## Test
+        events = {}
+        for frame in frames_HS_l:
+            events[frame] = "EVENT_LEFT_FOOT_INITIAL_CONTACT"
+
+        for frame in frames_HS_r:
+            events[frame] = "EVENT_RIGHT_FOOT_INITIAL_CONTACT"
+
+        for frame in frames_TO_r:
+            events[frame] = "EVENT_RIGHT_FOOT_TOE_OFF"
+
+        for frame in frames_TO_l:
+            events[frame] = "EVENT_LEFT_FOOT_TOE_OFF"
+
+        frames = list(events.keys())
+        frames.sort()
+
+        with open("test_events.txt", 'w') as f:
+            for i, frame in enumerate(frames):
+                f.write(f"{i}\t{events[frame]}\t{frame}\t{frame / 100}\n")
+
+        ####
 
         self.events = pd.DataFrame(events_sort)
 
@@ -118,7 +142,7 @@ class Events:
         """
         if len(turns) != 0:
             if len(turns) == 1:
-                self._pelvis_x[turns[0]:] *= -1
+                self._sacro_x[turns[0]:] *= -1
                 self._left_foot_x[turns[0]:] *= -1
                 self._left_toe_x[turns[0]:] *= -1
                 self._right_foot_x[turns[0]:] *= -1
@@ -127,7 +151,7 @@ class Events:
                 for i in range(0, len(turns)//2):
                     j = i * 2
                     k = (i * 2) + 1
-                    self._pelvis_x[turns[j]:turns[k]] *= -1
+                    self._sacro_x[turns[j]:turns[k]] *= -1
                     self._left_foot_x[turns[j]:turns[k]] *= -1
                     self._left_toe_x[turns[j]:turns[k]] *= -1
                     self._right_foot_x[turns[j]:turns[k]] *= -1
@@ -140,7 +164,6 @@ class Events:
         :param threshold:
         :return:
         """
-        turns = []
 
         kneedle_max = peak_detection(self._sacro_x, s=C.PEAK_SENSIBILITY,max=True)
         kneedle_min = peak_detection(self._sacro_x, s=C.PEAK_SENSIBILITY,max=False)
@@ -152,6 +175,8 @@ class Events:
         for turn in turns_not_processed:
             if turn > 100:
                 turns_filter.append(turn)
+
+        turns = []
         for i in range(0, len(turns_filter)):
             if i == 0:
                 back = True
