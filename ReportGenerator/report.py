@@ -9,13 +9,14 @@ from datetime import date
 
 class Report:
 
-    def __init__(self, name, surname, age, gait):
+    def __init__(self, name, surname, age, gait, evaluation):
 
         self._template = DocxTemplate(C.TEMPLATE_PATH)
         self._gait = gait
         self._name = name
         self._surname = surname
         self._age = age
+        self._evaluation = evaluation
 
     def generate_report(self):
         context = {}
@@ -72,6 +73,36 @@ class Report:
         input["Med"] = round((input["Der"] + input["Izq"]) / 2, 3)
         spatiotemporal_fig_4 = self._create_img(13, self._spatiotemporal_figure_duration(input))
         context['steps_duration'] = spatiotemporal_fig_4
+
+        ## Kinematics
+
+
+
+        ## Tinetti
+        print(self._evaluation)
+        context["cp0"] = round(self._evaluation["DC"]["prob"][0],2)
+        context["cp1"] = round(self._evaluation["DC"]["prob"][1],2)
+        context["lap10"] = round(self._evaluation["LAP1"]["prob"][0],2)
+        context["lap11"] = round(self._evaluation["LAP1"]["prob"][1],2)
+        context["lap20"] = round(self._evaluation["LAP2"]["prob"][0],2)
+        context["lap21"] = round(self._evaluation["LAP2"]["prob"][1],2)
+        context["lap30"] = round(self._evaluation["LAP3"]["prob"][0],2)
+        context["lap31"] = round(self._evaluation["LAP3"]["prob"][1],2)
+        context["lap40"] = round(self._evaluation["LAP4"]["prob"][0],2)
+        context["lap41"] = round(self._evaluation["LAP4"]["prob"][1],2)
+        context["pm0"] = round(self._evaluation["PM"]["prob"][0],2)
+        context["pm1"] = round(self._evaluation["PM"]["prob"][1],2)
+        context["dt0"] = round(self._evaluation["DT"]["prob"][0],2)
+        context["dt1"] = round(self._evaluation["DT"]["prob"][1],2)
+        context["dt2"] = round(self._evaluation["DT"]["prob"][2],2)
+
+        total = 0
+        for pat in self._evaluation:
+            total += self._evaluation[pat]["result"]
+
+        total += self._evaluation["DC"]["result"]
+
+        context["tinetti_total"] = total
 
         self._template.render(context)
         self._template.save("generated_doc.docx")
