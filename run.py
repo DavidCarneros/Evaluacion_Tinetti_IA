@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from InputProcessing import events,gaitParameters
 from AI import evaluator
+from ReportGenerator import report
 
 def run(filename, name="No name"):
 
@@ -16,10 +17,16 @@ def run(filename, name="No name"):
     gait_parser = gaitParameters.GaitParameters(joints_angles, segment_position, center_of_mass, events_parser.events)
     gait_parser.get_params()
 
+    print(gait_parser.gait["total_right"])
+    print(gait_parser.gait["total_left"])
+
     gait_evaluator = evaluator.GaitEvaluator(gait_parser.gait)
     gait_evaluator.predict_all()
 
-    print(gait_evaluator.evaluation)
+    report_generator = report.Report("David","Carneros Prado",23,gait_parser.gait)
+    report_generator.generate_report()
+
+    #print(gait_evaluator.evaluation)
 
 
 if __name__ == "__main__":
