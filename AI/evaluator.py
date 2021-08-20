@@ -143,6 +143,7 @@ class GaitEvaluator:
         data = {}
         data["cadence"] = input["cadence"]
         data["velocity"] = input["velocity"]
+        data["support_width"] = input["support_width"]
         for leg in ["right", "left"]:
             data[f"stride_duration_{leg}"] = input[leg]["spaciotemporal"]["duration"]
             data[f"support_duration_{leg}"] = input[leg]["spaciotemporal"]["support_duration"]

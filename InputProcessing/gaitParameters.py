@@ -47,6 +47,7 @@ class GaitParameters:
         strides["steps"] = local_spatiotemporal["steps"]
         strides["cadence"] = local_spatiotemporal["cadence"]
         strides["velocity"] = 0
+        strides["support_width"] = local_spatiotemporal["support_width"]
         strides["right"] = {}
         strides["right"]["spaciotemporal"] = self._get_global_spatiotemporal(right)
         strides["right"]["spaciotemporal"]["steps"] = local_spatiotemporal["steps_right"]
