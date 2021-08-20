@@ -46,14 +46,14 @@ class GaitEvaluator:
 
         predict_text = ["LAP1","LAP2","LAP3","LAP4","DC","PM","DT"]
 
-        evaluation = []
+        evaluation = {}
         for i in range(0,len(predict_functions)):
-            predict = {}
+
             result, prob = predict_functions[i]()
-            predict[predict_text[i]] = {}
-            predict[predict_text[i]]["result"] = result[0]
-            predict[predict_text[i]]["prob"] = prob[0]
-            evaluation.append(predict)
+            evaluation[predict_text[i]] = {}
+            evaluation[predict_text[i]]["result"] = result[0]
+            evaluation[predict_text[i]]["prob"] = prob[0]
+            #evaluation.append(predict)
 
         self.evaluation = evaluation
 
