@@ -404,8 +404,8 @@ class GaitParameters:
         """
         turns = []
 
-        kneedle_max = peak_detection(self._sacro_x, s=C.PEAK_SENSIBILITY, max=True)
-        kneedle_min = peak_detection(self._sacro_x, s=C.PEAK_SENSIBILITY, max=False)
+        kneedle_max = peak_detection(self._orientation, s=C.PEAK_SENSIBILITY, max=True)
+        kneedle_min = peak_detection(self._orientation, s=C.PEAK_SENSIBILITY, max=False)
 
         turns_not_processed = (list(kneedle_max) + list(kneedle_min))
         turns_not_processed.sort()
@@ -418,11 +418,11 @@ class GaitParameters:
             if i == 0:
                 back = True
             else:
-                back = abs(self._sacro_x[turns_filter[i - 1]] - self._sacro_x[turns_filter[i]]) > threshold
+                back = abs(self._orientation[turns_filter[i - 1]] - self._orientation[turns_filter[i]]) > threshold
             if i == (len(turns_filter) - 1):
                 forward = True
             else:
-                forward = abs(self._sacro_x[turns_filter[i + 1]] - self._sacro_x[turns_filter[i]]) > threshold
+                forward = abs(self._orientation[turns_filter[i + 1]] - self._orientation[turns_filter[i]]) > threshold
 
             if back and forward:
                 turns.append(turns_filter[i])
