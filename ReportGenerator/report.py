@@ -1,8 +1,9 @@
-from docxtpl import DocxTemplate, InlineImage
+from docxtpl import DocxTemplate, InlineImage, RichText
 import matplotlib.pyplot as plt
 from docx.shared import Cm
 import seaborn as sns
 import pandas as pd
+import numpy as np
 import io
 import ReportGenerator.constants as C
 from datetime import date
@@ -18,6 +19,7 @@ class Report:
         self._surname = surname
         self._age = age
         self._evaluation = evaluation
+        self._normal_kinematics = pd.read_hdf(C.NORMAL_KINEMATICS_PATH)
 
     def generate_report(self):
             context = {}
@@ -78,25 +80,185 @@ class Report:
 
             ## Kinematics
 
+            data_kine, data_max, data_min = self._get_kinematics_parameters("Hip Abduction/Adduction","right")
+            context["hip_abd_adu_der_min"] = round(np.array(data_min).min(),2)
+            context["hip_abd_adu_der_max"] = round(np.array(data_max).max(),2)
+            context["hip_abd_adu_der_range"] = self._get_joint_range(np.array(data_max).max(),np.array(data_min).min())
+            context["hip_abd_adu_der"] = self._create_img(9,self._generate_kinematic_graph(data_kine,kine_text="Hip Abduction/Adduction"))
 
+            data_kine, data_max, data_min = self._get_kinematics_parameters("Hip Abduction/Adduction", "left")
+            context["hip_abd_adu_izq_min"] = round(np.array(data_min).min(), 2)
+            context["hip_abd_adu_izq_max"] = round(np.array(data_max).max(), 2)
+            context["hip_abd_adu_izq_range"] = self._get_joint_range(np.array(data_max).max(),np.array(data_min).min())
+            context["hip_abd_adu_izq"] = self._create_img(9,self._generate_kinematic_graph(data_kine,leg="left",kine_text="Hip Abduction/Adduction"))
+
+            data_kine, data_max, data_min = self._get_kinematics_parameters("Hip Flexion/Extension", "right")
+            context["hip_flex_ext_der_min"] = round(np.array(data_min).min(), 2)
+            context["hip_flex_ext_der_max"] = round(np.array(data_max).max(), 2)
+            context["hip_flex_ext_der_range"] = self._get_joint_range(np.array(data_max).max(),np.array(data_min).min())
+            context["hip_flex_ext_der"] = self._create_img(9,self._generate_kinematic_graph(data_kine,leg="right",kine_text="Hip Flexion/Extension"))
+
+            data_kine, data_max, data_min = self._get_kinematics_parameters("Hip Flexion/Extension", "left")
+            context["hip_flex_ext_izq_min"] = round(np.array(data_min).min(), 2)
+            context["hip_flex_ext_izq_max"] = round(np.array(data_max).max(), 2)
+            context["hip_flex_ext_izq_range"] = self._get_joint_range(np.array(data_max).max(),np.array(data_min).min())
+            context["hip_flex_ext_izq"] =  self._create_img(9,self._generate_kinematic_graph(data_kine,leg="left",kine_text="Hip Flexion/Extension"))
+
+            data_kine, data_max, data_min = self._get_kinematics_parameters("Hip Internal/External Rotation", "right")
+            context["hip_rot_der_min"] = round(np.array(data_min).min(), 2)
+            context["hip_rot_der_max"] = round(np.array(data_max).max(), 2)
+            context["hip_rot_der_range"] = self._get_joint_range(np.array(data_max).max(),np.array(data_min).min())
+            context["hip_rot_der"] = self._create_img(9,self._generate_kinematic_graph(data_kine,leg="right",kine_text="Hip Internal/External Rotation"))
+
+            data_kine, data_max, data_min = self._get_kinematics_parameters("Hip Internal/External Rotation", "left")
+            context["hip_rot_izq_min"] = round(np.array(data_min).min(), 2)
+            context["hip_rot_izq_max"] = round(np.array(data_max).max(), 2)
+            context["hip_rot_izq_range"] = self._get_joint_range(np.array(data_max).max(),np.array(data_min).min())
+            context["hip_rot_izq"] =  self._create_img(9,self._generate_kinematic_graph(data_kine,leg="left",kine_text="Hip Internal/External Rotation"))
+
+            ## knee
+
+            data_kine, data_max, data_min = self._get_kinematics_parameters("Knee Abduction/Adduction", "right")
+            context["knee_abd_adu_der_min"] = round(np.array(data_min).min(), 2)
+            context["knee_abd_adu_der_max"] = round(np.array(data_max).max(), 2)
+            context["knee_abd_adu_der_range"] = self._get_joint_range(np.array(data_max).max(),np.array(data_min).min())
+            context["knee_abd_adu_der"] = self._create_img(9,self._generate_kinematic_graph(data_kine,leg="right",kine_text="Knee Abduction/Adduction"))
+
+            data_kine, data_max, data_min = self._get_kinematics_parameters("Knee Abduction/Adduction", "left")
+            context["knee_abd_adu_izq_min"] = round(np.array(data_min).min(), 2)
+            context["knee_abd_adu_izq_max"] = round(np.array(data_max).max(), 2)
+            context["knee_abd_adu_izq_range"] = self._get_joint_range(np.array(data_max).max(),np.array(data_min).min())
+            context["knee_abd_adu_izq"] =  self._create_img(9,self._generate_kinematic_graph(data_kine,leg="left",kine_text="Knee Abduction/Adduction"))
+
+            data_kine, data_max, data_min = self._get_kinematics_parameters("Knee Flexion/Extension", "right")
+            context["knee_flex_ext_der_min"] = round(np.array(data_min).min(), 2)
+            context["knee_flex_ext_der_max"] = round(np.array(data_max).max(), 2)
+            context["knee_flex_ext_der_range"] = self._get_joint_range(np.array(data_max).max(),np.array(data_min).min())
+            context["knee_flex_ext_der"] = self._create_img(9,self._generate_kinematic_graph(data_kine,leg="right",kine_text="Knee Flexion/Extension"))
+
+            data_kine, data_max, data_min = self._get_kinematics_parameters("Knee Flexion/Extension", "left")
+            context["knee_flex_ext_izq_min"] = round(np.array(data_min).min(), 2)
+            context["knee_flex_ext_izq_max"] = round(np.array(data_max).max(), 2)
+            context["knee_flex_ext_izq_range"] = self._get_joint_range(np.array(data_max).max(),np.array(data_min).min())
+            context["knee_flex_ext_izq"] =  self._create_img(9,self._generate_kinematic_graph(data_kine,leg="left",kine_text="Knee Flexion/Extension"))
+
+            data_kine, data_max, data_min = self._get_kinematics_parameters("Knee Internal/External Rotation", "right")
+            context["knee_rot_der_min"] = round(np.array(data_min).min(), 2)
+            context["knee_rot_der_max"] = round(np.array(data_max).max(), 2)
+            context["knee_rot_der_range"] = self._get_joint_range(np.array(data_max).max(),np.array(data_min).min())
+            context["knee_rot_der"] = self._create_img(9,self._generate_kinematic_graph(data_kine,leg="right",kine_text="Knee Internal/External Rotation"))
+
+            data_kine, data_max, data_min = self._get_kinematics_parameters("Knee Internal/External Rotation", "left")
+            context["knee_rot_izq_min"] = round(np.array(data_min).min(), 2)
+            context["knee_rot_izq_max"] = round(np.array(data_max).max(), 2)
+            context["knee_rot_izq_range"] = self._get_joint_range(np.array(data_max).max(),np.array(data_min).min())
+            context["knee_rot_izq"] =  self._create_img(9,self._generate_kinematic_graph(data_kine,leg="left",kine_text="Knee Internal/External Rotation"))
+
+            ## ankle
+            data_kine, data_max, data_min = self._get_kinematics_parameters("Ankle Abduction/Adduction", "right")
+            context["ankle_abd_adu_der_min"] = round(np.array(data_min).min(), 2)
+            context["ankle_abd_adu_der_max"] = round(np.array(data_max).max(), 2)
+            context["ankle_abd_adu_der_range"] = self._get_joint_range(np.array(data_max).max(),np.array(data_min).min())
+            context["ankle_abd_adu_der"] = self._create_img(9,self._generate_kinematic_graph(data_kine,leg="right",kine_text="Ankle Abduction/Adduction"))
+
+            data_kine, data_max, data_min = self._get_kinematics_parameters("Ankle Abduction/Adduction", "left")
+            context["ankle_abd_adu_izq_min"] = round(np.array(data_min).min(), 2)
+            context["ankle_abd_adu_izq_max"] = round(np.array(data_max).max(), 2)
+            context["ankle_abd_adu_izq_range"] = self._get_joint_range(np.array(data_max).max(),np.array(data_min).min())
+            context["ankle_abd_adu_izq"] =  self._create_img(9,self._generate_kinematic_graph(data_kine,leg="left",kine_text="Ankle Abduction/Adduction"))
+
+            data_kine, data_max, data_min = self._get_kinematics_parameters("Ankle Dorsiflexion/Plantarflexion", "right")
+            context["ankle_flex_ext_der_min"] = round(np.array(data_min).min(), 2)
+            context["ankle_flex_ext_der_max"] = round(np.array(data_max).max(), 2)
+            context["ankle_flex_ext_der_range"] = self._get_joint_range(np.array(data_max).max(),np.array(data_min).min())
+            context["ankle_flex_ext_der"] = self._create_img(9,self._generate_kinematic_graph(data_kine,leg="right",kine_text="Ankle Dorsiflexion/Plantarflexion"))
+
+            data_kine, data_max, data_min = self._get_kinematics_parameters("Ankle Dorsiflexion/Plantarflexion", "left")
+            context["ankle_flex_ext_izq_min"] = round(np.array(data_min).min(), 2)
+            context["ankle_flex_ext_izq_max"] = round(np.array(data_max).max(), 2)
+            context["ankle_flex_ext_izq_range"] = self._get_joint_range(np.array(data_max).max(),np.array(data_min).min())
+            context["ankle_flex_ext_izq"] =  self._create_img(9,self._generate_kinematic_graph(data_kine,leg="left",kine_text="Ankle Dorsiflexion/Plantarflexion"))
+
+            data_kine, data_max, data_min = self._get_kinematics_parameters("Ankle Internal/External Rotation", "right")
+            context["ankle_rot_der_min"] = round(np.array(data_min).min(), 2)
+            context["ankle_rot_der_max"] = round(np.array(data_max).max(), 2)
+            context["ankle_rot_der_range"] = self._get_joint_range(np.array(data_max).max(),np.array(data_min).min())
+            context["ankle_rot_der"] =  self._create_img(9,self._generate_kinematic_graph(data_kine,leg="right",kine_text="Ankle Internal/External Rotation"))
+
+            data_kine, data_max, data_min = self._get_kinematics_parameters("Ankle Internal/External Rotation", "left")
+            context["ankle_rot_izq_min"] = round(np.array(data_min).min(), 2)
+            context["ankle_rot_izq_max"] = round(np.array(data_max).max(), 2)
+            context["ankle_rot_izq_range"] = self._get_joint_range(np.array(data_max).max(),np.array(data_min).min())
+            context["ankle_rot_izq"] =  self._create_img(9,self._generate_kinematic_graph(data_kine,leg="left",kine_text="Ankle Internal/External Rotation"))
 
             ## Tinetti
-            print(self._evaluation)
-            context["cp0"] = round(self._evaluation["DC"]["prob"][0] * 100,2)
-            context["cp1"] = round(self._evaluation["DC"]["prob"][1] * 100,2)
-            context["lap10"] = round(self._evaluation["LAP1"]["prob"][0] * 100,2)
-            context["lap11"] = round(self._evaluation["LAP1"]["prob"][1] * 100,2)
-            context["lap20"] = round(self._evaluation["LAP2"]["prob"][0] * 100,2)
-            context["lap21"] = round(self._evaluation["LAP2"]["prob"][1] * 100,2)
-            context["lap30"] = round(self._evaluation["LAP3"]["prob"][0] * 100,2)
-            context["lap31"] = round(self._evaluation["LAP3"]["prob"][1] * 100,2)
-            context["lap40"] = round(self._evaluation["LAP4"]["prob"][0] * 100,2)
-            context["lap41"] = round(self._evaluation["LAP4"]["prob"][1] * 100,2)
-            context["pm0"] = round(self._evaluation["PM"]["prob"][0] * 100,2)
-            context["pm1"] = round(self._evaluation["PM"]["prob"][1] * 100,2)
-            context["dt0"] = round(self._evaluation["DT"]["prob"][0] * 100,2)
-            context["dt1"] = round(self._evaluation["DT"]["prob"][1] * 100,2)
-            context["dt2"] = round(self._evaluation["DT"]["prob"][2] * 100,2)
+
+            cp0 = f"0 ({round(self._evaluation['DC']['prob'][0] * 100, 2)})"
+            cp1 = f"1 ({round(self._evaluation['DC']['prob'][1] * 100, 2)})"
+            rtcp0 = RichText()
+            rtcp1 = RichText()
+            rtcp0.add(cp0, bold=self._evaluation["DC"]["result"] == 0)
+            rtcp1.add(cp1, bold=self._evaluation["DC"]["result"] == 1)
+            context['cp0'] = rtcp0
+            context['cp1'] = rtcp1
+
+            lap10 = f"0 ({round(self._evaluation['LAP1']['prob'][0] * 100, 2)})"
+            lap11 = f"1 ({round(self._evaluation['LAP1']['prob'][1] * 100, 2)})"
+            rtlap10 = RichText()
+            rtlap11 = RichText()
+            rtlap10.add(lap10, bold=self._evaluation["LAP1"]["result"] == 0)
+            rtlap11.add(lap11, bold=self._evaluation["LAP1"]["result"] == 1)
+            context['lap10'] = rtlap10
+            context['lap11'] = rtlap11
+
+            lap20 = f"0 ({round(self._evaluation['LAP2']['prob'][0] * 100, 2)})"
+            lap21 = f"1 ({round(self._evaluation['LAP2']['prob'][1] * 100, 2)})"
+            rtlap20 = RichText()
+            rtlap21 = RichText()
+            rtlap20.add(lap20, bold=self._evaluation["LAP2"]["result"] == 0)
+            rtlap21.add(lap21, bold=self._evaluation["LAP2"]["result"] == 1)
+            context['lap20'] = rtlap20
+            context['lap21'] = rtlap21
+
+            lap30 = f"0 ({round(self._evaluation['LAP3']['prob'][0] * 100, 2)})"
+            lap31 = f"1 ({round(self._evaluation['LAP3']['prob'][1] * 100, 2)})"
+            rtlap30 = RichText()
+            rtlap31 = RichText()
+            rtlap30.add(lap30, bold=self._evaluation["LAP3"]["result"] == 0)
+            rtlap31.add(lap31, bold=self._evaluation["LAP3"]["result"] == 1)
+            context['lap30'] = rtlap30
+            context['lap31'] = rtlap31
+
+            lap40 = f"0 ({round(self._evaluation['LAP4']['prob'][0] * 100, 2)})"
+            lap41 = f"1 ({round(self._evaluation['LAP4']['prob'][1] * 100, 2)})"
+            rtlap40 = RichText()
+            rtlap41 = RichText()
+            rtlap40.add(lap40, bold=self._evaluation["LAP4"]["result"] == 0)
+            rtlap41.add(lap41, bold=self._evaluation["LAP4"]["result"] == 1)
+            context['lap40'] = rtlap40
+            context['lap41'] = rtlap41
+
+            pm0 = f"0 ({round(self._evaluation['PM']['prob'][0] * 100, 2)})"
+            pm1 = f"1 ({round(self._evaluation['PM']['prob'][1] * 100, 2)})"
+            rtpm0 = RichText()
+            rtpm1 = RichText()
+            rtpm0.add(pm0, bold=self._evaluation["PM"]["result"] == 0)
+            rtpm1.add(pm1, bold=self._evaluation["PM"]["result"] == 1)
+            context['pm0'] = rtpm0
+            context['pm1'] = rtpm1
+
+            dt0 = f"0 ({round(self._evaluation['DT']['prob'][0] * 100, 2)})"
+            dt1 = f"1 ({round(self._evaluation['DT']['prob'][1] * 100, 2)})"
+            dt2 = f"2 ({round(self._evaluation['DT']['prob'][2] * 100, 2)})"
+            rtdt0 = RichText()
+            rtdt1 = RichText()
+            rtdt2 = RichText()
+            rtdt0.add(dt0, bold=self._evaluation["DT"]["result"] == 0)
+            rtdt1.add(dt1, bold=self._evaluation["DT"]["result"] == 1)
+            rtdt2.add(dt2, bold=self._evaluation["DT"]["result"] == 2)
+            context['dt0'] = rtdt0
+            context['dt1'] = rtdt1
+            context['dt2'] = rtdt2
 
             total = 0
             for pat in self._evaluation:
@@ -113,6 +275,55 @@ class Report:
         img_size = Cm(size)  # sets the size of the image
         img = InlineImage(self._template, buf, img_size)
         return img
+
+    def _get_joint_range(self, a, b):
+        if a > b:
+            return round(abs(b-a),2)
+        else:
+            return round(abs(a-b),2)
+
+    def _get_kinematics_parameters(self,kine_text,leg):
+        data_kine = []
+        data_min = []
+        data_max = []
+        for stride in self._gait[leg]["strides"]:
+            data_kine.append(stride["kinematics"][kine_text])
+            data_min.append(np.array(stride["kinematics"][kine_text]).min())
+            data_max.append(np.array(stride["kinematics"][kine_text]).max())
+
+        #return data_kine, data_min, data_max
+        return data_kine, data_max, data_min
+
+    def _generate_kinematic_graph(self,input,kine_text="",leg="right"):
+        fig, ax = plt.subplots(figsize=(10, 7))
+
+        data = []
+        for i in range(0, len(input)):
+            for j in range(0,len(input[i])):
+                stride_data = {"per": j, "kine": input[i][j]}
+                data.append(stride_data)
+        data = pd.DataFrame(data)
+
+        normal = self._normal_kinematics[self._normal_kinematics["kine_text"] == kine_text]
+        normal = normal[normal["leg"] == leg]
+
+        color = "lightblue" if leg == "right" else "red"
+
+        sns.set_color_codes("pastel")
+
+        sns.lineplot(data=normal, x="per",y="kine",ls="",color="gray",ax=ax,legend=False,ci="sd")
+        #sns.lineplot(data=df, x="per", y="kine", hue="Pierna", ci=100, palette=["b", "r"], ax=ax)
+        #for line in input:
+        sns.lineplot(data=data,x="per",y="kine",ls="-",color=color,ax=ax,legend=False)
+
+        ax.set_xlabel("Ciclo marcha (%)", fontsize=14, labelpad=10)
+        ax.set_ylabel("Ángulo (º)", fontsize=14, labelpad=10)
+
+        ax.axvline(60, ls=':', c="lightgray")
+        buf = io.BytesIO()
+        plt.savefig(buf, dpi=150)
+        plt.close()
+        return buf
 
     def _spatiotemporal_figure_duration(self,input):
         sns.set_theme(style="whitegrid")
