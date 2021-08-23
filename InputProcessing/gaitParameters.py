@@ -35,13 +35,19 @@ class GaitParameters:
 
         :return:
         """
+        print(f"Obteniendo parámetros de la marcha ", end="")
+
         self._orientation = savitzky_golay(self._sacro_x, C.WINDOW_SIZE,C.ORDER)
         turns = self._get_and_filter_turns(threshold=C.TURNS_THRESHOLD)
+        self._print_process()
 
         right = self._get_strides("Right",turns)
+        self._print_process()
         left = self._get_strides("Left",turns)
+        self._print_process()
 
         local_spatiotemporal = self._get_general_spatiotemporal(turns)
+        self._print_process()
 
         strides = {}
         strides["steps"] = local_spatiotemporal["steps"]
@@ -68,6 +74,7 @@ class GaitParameters:
                                   strides["right"]["spaciotemporal"]["stride_length"]) / 2) / 1000)
                                * strides["cadence"] / 120)
 
+        self._print_finish()
         self.gait = strides
 
     def _get_global_spatiotemporal(self,strides):
@@ -447,3 +454,9 @@ class GaitParameters:
             'steps_duration_left': None,
             'support_width': None
         }
+
+    def _print_process(self):
+        print(".", end="")
+
+    def _print_finish(self):
+        print(f"{C.Colorama.OKGREEN} Hecho!{C.Colorama.ENDC}")

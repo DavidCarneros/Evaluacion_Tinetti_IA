@@ -26,10 +26,14 @@ class Events:
         :return:
         """
 
+        print(f"Generando eventos de la marcha ", end="")
+
         self._sacro_x = savitzky_golay(self._pelvis_x, C.WINDOW_SIZE, C.ORDER)
+        self._print_process()
 
         turns = self._get_and_filter_turns(threshold=C.TURNS_THRESHOLD)
         self._process_turns(turns)
+        self._print_process()
 
         # Get Heel Strike Events
         X_HS_l = self._left_foot_x - self._sacro_x
@@ -37,6 +41,8 @@ class Events:
 
         frames_HS_l = self._get_events_frames(X_HS_l, turns, "HS", C.PEAK_SENSIBILITY, self._drop_turns)
         frames_HS_r = self._get_events_frames(X_HS_r, turns, "HS", C.PEAK_SENSIBILITY, self._drop_turns)
+        self._print_process()
+
 
         # Get Toe Off Events
         X_TO_l = self._left_toe_x - self._sacro_x
@@ -44,6 +50,7 @@ class Events:
 
         frames_TO_l = self._get_events_frames(X_TO_l, turns, "TO", C.PEAK_SENSIBILITY,self._drop_turns)
         frames_TO_r = self._get_events_frames(X_TO_r, turns, "TO", C.PEAK_SENSIBILITY, self._drop_turns)
+        self._print_process()
 
         events = []
         for frame in frames_HS_l:
@@ -78,34 +85,16 @@ class Events:
             event["time"] = frame / 100
             events.append(event)
 
-
-        # sort and save
         events_sort = sorted(events, key=lambda k: k['frame'])
-
-        ## Test
-        events = {}
-        for frame in frames_HS_l:
-            events[frame] = "EVENT_LEFT_FOOT_INITIAL_CONTACT"
-
-        for frame in frames_HS_r:
-            events[frame] = "EVENT_RIGHT_FOOT_INITIAL_CONTACT"
-
-        for frame in frames_TO_r:
-            events[frame] = "EVENT_RIGHT_FOOT_TOE_OFF"
-
-        for frame in frames_TO_l:
-            events[frame] = "EVENT_LEFT_FOOT_TOE_OFF"
-
-        frames = list(events.keys())
-        frames.sort()
-
-        with open("test_events.txt", 'w') as f:
-            for i, frame in enumerate(frames):
-                f.write(f"{i}\t{events[frame]}\t{frame}\t{frame / 100}\n")
-
-        ####
+        self._print_finish()
 
         self.events = pd.DataFrame(events_sort)
+
+    def _print_process(self):
+        print(".", end="")
+
+    def _print_finish(self):
+        print(f"{C.Colorama.OKGREEN} Hecho!{C.Colorama.ENDC}")
 
     def _get_events_frames(self,data,turns, event="HS", s=20, drop_turns=False):
         """

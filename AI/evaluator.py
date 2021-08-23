@@ -38,6 +38,7 @@ class GaitEvaluator:
 
         :return:
         """
+        print(f"Evaluando marcha ", end="")
 
         predict_functions = [self._predict_lap1,self._predict_lap2,
                              self._predict_lap3,self._predict_lap4,
@@ -53,8 +54,10 @@ class GaitEvaluator:
             evaluation[predict_text[i]] = {}
             evaluation[predict_text[i]]["result"] = result[0]
             evaluation[predict_text[i]]["prob"] = prob[0]
+            self._print_process()
             #evaluation.append(predict)
 
+        self._print_finish()
         self.evaluation = evaluation
 
     def _predict_lap1(self):
@@ -206,3 +209,9 @@ class GaitEvaluator:
                 data[f"{leg} {kinematics} 100%"] = np.array(mean_100).mean()
 
         return pd.DataFrame([data])
+
+    def _print_process(self):
+        print(".", end="")
+
+    def _print_finish(self):
+        print(f"{C.Colorama.OKGREEN} Hecho!{C.Colorama.ENDC}")
