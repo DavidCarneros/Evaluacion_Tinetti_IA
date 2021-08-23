@@ -35,18 +35,25 @@ class GaitParameters:
 
         :return:
         """
+        print(f"Obteniendo parámetros de la marcha ", end="")
+
         self._orientation = savitzky_golay(self._sacro_x, C.WINDOW_SIZE,C.ORDER)
         turns = self._get_and_filter_turns(threshold=C.TURNS_THRESHOLD)
+        self._print_process()
 
         right = self._get_strides("Right",turns)
+        self._print_process()
         left = self._get_strides("Left",turns)
+        self._print_process()
 
         local_spatiotemporal = self._get_general_spatiotemporal(turns)
+        self._print_process()
 
         strides = {}
         strides["steps"] = local_spatiotemporal["steps"]
         strides["cadence"] = local_spatiotemporal["cadence"]
         strides["velocity"] = 0
+        strides["support_width"] = local_spatiotemporal["support_width"]
         strides["right"] = {}
         strides["right"]["spaciotemporal"] = self._get_global_spatiotemporal(right)
         strides["right"]["spaciotemporal"]["steps"] = local_spatiotemporal["steps_right"]
@@ -67,6 +74,7 @@ class GaitParameters:
                                   strides["right"]["spaciotemporal"]["stride_length"]) / 2) / 1000)
                                * strides["cadence"] / 120)
 
+        self._print_finish()
         self.gait = strides
 
     def _get_global_spatiotemporal(self,strides):
@@ -404,8 +412,8 @@ class GaitParameters:
         """
         turns = []
 
-        kneedle_max = peak_detection(self._sacro_x, s=C.PEAK_SENSIBILITY, max=True)
-        kneedle_min = peak_detection(self._sacro_x, s=C.PEAK_SENSIBILITY, max=False)
+        kneedle_max = peak_detection(self._orientation, s=C.PEAK_SENSIBILITY, max=True)
+        kneedle_min = peak_detection(self._orientation, s=C.PEAK_SENSIBILITY, max=False)
 
         turns_not_processed = (list(kneedle_max) + list(kneedle_min))
         turns_not_processed.sort()
@@ -418,11 +426,11 @@ class GaitParameters:
             if i == 0:
                 back = True
             else:
-                back = abs(self._sacro_x[turns_filter[i - 1]] - self._sacro_x[turns_filter[i]]) > threshold
+                back = abs(self._orientation[turns_filter[i - 1]] - self._orientation[turns_filter[i]]) > threshold
             if i == (len(turns_filter) - 1):
                 forward = True
             else:
-                forward = abs(self._sacro_x[turns_filter[i + 1]] - self._sacro_x[turns_filter[i]]) > threshold
+                forward = abs(self._orientation[turns_filter[i + 1]] - self._orientation[turns_filter[i]]) > threshold
 
             if back and forward:
                 turns.append(turns_filter[i])
@@ -446,3 +454,9 @@ class GaitParameters:
             'steps_duration_left': None,
             'support_width': None
         }
+
+    def _print_process(self):
+        print(".", end="")
+
+    def _print_finish(self):
+        print(f"{C.Colorama.OKGREEN} Hecho!{C.Colorama.ENDC}")

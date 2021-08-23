@@ -38,6 +38,7 @@ class GaitEvaluator:
 
         :return:
         """
+        print(f"Evaluando marcha ", end="")
 
         predict_functions = [self._predict_lap1,self._predict_lap2,
                              self._predict_lap3,self._predict_lap4,
@@ -46,15 +47,17 @@ class GaitEvaluator:
 
         predict_text = ["LAP1","LAP2","LAP3","LAP4","DC","PM","DT"]
 
-        evaluation = []
+        evaluation = {}
         for i in range(0,len(predict_functions)):
-            predict = {}
-            result, prob = predict_functions[i]()
-            predict[predict_text[i]] = {}
-            predict[predict_text[i]]["result"] = result[0]
-            predict[predict_text[i]]["prob"] = prob[0]
-            evaluation.append(predict)
 
+            result, prob = predict_functions[i]()
+            evaluation[predict_text[i]] = {}
+            evaluation[predict_text[i]]["result"] = result[0]
+            evaluation[predict_text[i]]["prob"] = prob[0]
+            self._print_process()
+            #evaluation.append(predict)
+
+        self._print_finish()
         self.evaluation = evaluation
 
     def _predict_lap1(self):
@@ -143,6 +146,7 @@ class GaitEvaluator:
         data = {}
         data["cadence"] = input["cadence"]
         data["velocity"] = input["velocity"]
+        data["support_width"] = input["support_width"]
         for leg in ["right", "left"]:
             data[f"stride_duration_{leg}"] = input[leg]["spaciotemporal"]["duration"]
             data[f"support_duration_{leg}"] = input[leg]["spaciotemporal"]["support_duration"]
@@ -205,3 +209,9 @@ class GaitEvaluator:
                 data[f"{leg} {kinematics} 100%"] = np.array(mean_100).mean()
 
         return pd.DataFrame([data])
+
+    def _print_process(self):
+        print(".", end="")
+
+    def _print_finish(self):
+        print(f"{C.Colorama.OKGREEN} Hecho!{C.Colorama.ENDC}")
