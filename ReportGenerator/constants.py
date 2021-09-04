@@ -2,6 +2,8 @@
 TEMPLATE_PATH = "./ReportGenerator/template.docx"
 NORMAL_KINEMATICS_PATH = "./ReportGenerator/normal_kinematics.hdf5"
 
+WD_FORMAT_PDF = 17
+
 class Colorama:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
