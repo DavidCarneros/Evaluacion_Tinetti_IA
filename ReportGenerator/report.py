@@ -7,7 +7,12 @@ import numpy as np
 import io
 import ReportGenerator.constants as C
 from datetime import date
+import comtypes.client
+import os
+import pathlib
 import base64
+import time
+from docx2pdf import convert
 
 class Report:
 
@@ -306,7 +311,27 @@ class Report:
 
         self._print_process()
         self._template.render(context)
-        self._template.save("generated_doc.docx")
+        self._template.save("auxiliar.docx")
+
+        word = comtypes.client.CreateObject("Word.Application")
+
+        try:
+            word.Visible = True
+            time.sleep(3)
+            path = os.path.join(pathlib.Path().parent.resolve(),"auxiliar.docx")
+            path_save = os.path.join(pathlib.Path().parent.resolve(),"report.pdf")
+            doc = word.Documents.Open(path)
+            doc.SaveAs(path_save,FileFormat=C.WD_FORMAT_PDF)
+            doc.close()
+            word.Visible = False
+            word.quit()
+        except:
+            word.Visible = False
+            word.close()
+            self._template.save("report.docx")
+        #convert(path,path_save)
+
+        os.remove("auxiliar.docx")
 
         self._print_finish()
 
