@@ -1,3 +1,9 @@
+
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
+[![Windows](https://svgshare.com/i/ZhY.svg)](https://svgshare.com/i/ZhY.svg)
+[![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
+
+
 # Evaluacion Tinetti IA
 
 Software creado para evaluar la marcha del paciente mediante la prueba Tinetti. Este software es el resultado final del TFM para el master en Ingeniería y Ciencia de Datos "Evaluación funcional de la marcha del adulto mayor mediante un sistema de sensorización inercial y técnicas de aprendizaje automático".
