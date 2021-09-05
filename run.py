@@ -1,9 +1,9 @@
 import argparse
 import numpy as np
 import pandas as pd
-from InputProcessing import events,gaitParameters
-from AI import evaluator
-from ReportGenerator import report
+from src.InputProcessing import events,gaitParameters
+from src.AI import evaluator
+from src.ReportGenerator import report
 
 OKBLUE = '\033[94m'
 OKCYAN = '\033[96m'
@@ -44,7 +44,7 @@ if __name__ == "__main__":
     parser.add_argument("-s", "--surname",type=str, help="apellido del paciente",default="No surname",required=False)
     parser.add_argument("-a", "--age",type=str, help="edad del paciente", default="No age", required=False)
     parser.add_argument("-r", "--report",type=bool, help="generar informe", default=True, required=False)
-    parser.add_argument("-o", "--output",type=str, help="nombre del archivo generado",default="evaluación",required=False)
+    parser.add_argument("-o", "--output",type=str, help="nombre del archivo generado",default="report",required=False)
     args = parser.parse_args()
 
     filename = args.file
