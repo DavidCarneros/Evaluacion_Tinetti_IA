@@ -398,7 +398,7 @@ class Report:
 
         sns.set_color_codes("pastel")
         g = sns.barplot(data=data,
-                        label="Total", palette=["r", "lightgray", "b"], orient="h", dodge=False)
+                        label="Total", palette=["b", "lightgray", "r"], orient="h", dodge=False)
 
         ax.set(xlim=(0, 2), ylabel="")#, xlabel="Longitud de zancada")
 
@@ -424,7 +424,7 @@ class Report:
 
         sns.set_color_codes("pastel")
         g = sns.barplot(data=data,
-                        label="Total", palette=["r", "lightgray", "b"], orient="h", dodge=False)
+                        label="Total", palette=["b", "lightgray", "r"], orient="h", dodge=False)
 
         ax.set(xlim=(0, 1200), ylabel="")#, xlabel="Longitud de zancada")
 
